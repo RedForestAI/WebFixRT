@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.csv
+node_modules/
+script/data_practice_run/
 
 # C extensions
 *.so
