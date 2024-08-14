@@ -1,56 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
-import { profiling } from '../../js';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts/umd/Recharts';
-import { i } from 'mathjs';
+// import { profiling } from '../../js';
+import { profiling, RT_IDT_ALGO } from 'webfixrt';
+// import { statistics } from '../../js';
+// import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler } from "chart.js";
 
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
+
 
 const CsvLoader = ( onDataLoaded ) => {
   const [data, setData] = useState([]);
+  const [graphData, setGraphData] = useState([43, 40, 50, 40, 70, 40, 45, 33, 40, 60, 40, 50, 36]);
+  const [timeData, setTimeData] = useState(0);
 
   useEffect(() => {
     fetch('/data.csv')
@@ -60,8 +23,14 @@ const CsvLoader = ( onDataLoaded ) => {
           header: true,
           complete: (results) => {
             setData(results.data);
-            profiling(results.data)
-            // Plotting
+            const {delays, time_per_point} = profiling(results.data);
+            console.log(time_per_point);
+            setTimeData(time_per_point);
+            const frequencyCounts = delays.reduce((acc, value) => {
+              acc[value] = (acc[value] || 0) + 1;
+              return acc;
+            }, {});
+            setGraphData(frequencyCounts);
           },
         });
       });
@@ -75,48 +44,92 @@ const CsvLoader = ( onDataLoaded ) => {
     }
   }, [data, onDataLoaded]);
 
-  // useEffect(() => {
-  //   if (data.length > 0 && typeof onDataLoaded === 'function') {
-  //     console.log("Calling onDataLoaded with data: ", data);
-  //     onDataLoaded(data);
-  //   } else {
-  //     console.error("onDataLoaded is not a function or data is empty");
-  //   }
-  // }, [data, onDataLoaded]);
+  const labels = Object.keys(graphData);
+  const counts = Object.values(graphData);
+
+  const canvasData = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Count",
+        borderColor: "navy",
+        // pointRadius: 0,
+        // fill: true,
+        backgroundColor: 'yellow',
+        // lineTension: 0.4,
+        data: counts,
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        // labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        ticks: {
+          color: "red",
+          font: {
+            family: "Nunito",
+            size: 12,
+          },
+        },
+      },
+      y: {
+        grid: {
+          display: false,
+        },
+        border: {
+          display: false,
+        },
+        min: 0,
+        max: 80,
+        ticks: {
+          stepSize: 10,
+          color: "orange",
+          font: {
+            family: "Nunito",
+            size: 12,
+          },
+        },
+      },
+    },
+    maintainAspectRatio: false,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+        text: 'Frequency Count Bar Chart',
+      },
+    },
+  };
+
+  const graphStyle = {
+    minHeight: "10rem",
+    maxWidth: "540px",
+    width: "100%",
+    border: "1px solid #C4C4C4",
+    borderRadius: "0.375rem",
+    padding: "0.5rem",
+  };
 
   return (
-    <div style={{"height": 400, "width": 400}}>
-      <h1>CSV Data</h1>
-      {/* <ResponsiveContainer width="100%" height="100%"> */}
-        <LineChart
-          width={500}
-          height={300}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-        </LineChart>
-      {/* </ResponsiveContainer> */}
-      {/* <LineChart width={500} height={300} data={data}>
-    <XAxis dataKey="name"/>
-    <YAxis/>
-    <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
-    <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-    <Line type="monotone" dataKey="pv" stroke="#82ca9d" />
-  </LineChart> */}
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+    <div style={graphStyle}>
+      {/* <Line id="home" options={options} data={canvasData} /> */}
+      <Bar optisons={options} data={canvasData} />
+      <div>
+        <p>{timeData}</p>
+      </div>
     </div>
+  //   <div>
+  //   <p>{timeData}</p>
+  // </div>
   );
 };
 

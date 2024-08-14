@@ -267,7 +267,7 @@ function statistics(data, y_input) {
     // console.log('Chart saved as chart.png');
 }
 
-function profiling(data) {
+export function profiling(data) {
     const t = 0.1;
         const algo = new RT_IVT_ALGO();
         const SAMPLING_RATE = 50; // hz (1/1 sec)
@@ -316,11 +316,12 @@ function profiling(data) {
 
 readCSV("test.csv")
     .then((results) => {
+        console.log(results.length);
         y1 = ivt2(results, v_threshold = 0.6, verbose = 1);
         let lab = results.map(row => row.label);
         y_input = lab.slice(0, -1);
         y_input = y_input.map(x => Number(x));
-        profiling(results);
+        // profiling(results);
         // statistics(results, y_input);
 
         // const t = 0.1;
@@ -373,6 +374,6 @@ readCSV("test.csv")
         console.error('Error reading the CSV file: ', error)
     });
 
-export {profiling}
+// export {profiling}
 
 

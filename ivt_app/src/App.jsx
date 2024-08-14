@@ -22,7 +22,7 @@ function App() {
 
   return (
     <>
-    <LineGraph />
+    {/* <LineGraph /> */}
     <CsvLoader />
       <div>
         {/* <CsvLoader /> */}
