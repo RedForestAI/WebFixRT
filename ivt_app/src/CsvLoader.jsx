@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 // import { profiling } from '../../js';
-import { profiling, RT_IDT_ALGO } from 'webfixrt';
+import { RT_IVT_ALGO, RT_IDT_ALGO } from 'webfixrt';
 // import { statistics } from '../../js';
 // import { Line } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
@@ -15,6 +15,43 @@ const CsvLoader = ( onDataLoaded ) => {
   const [graphData, setGraphData] = useState([43, 40, 50, 40, 70, 40, 45, 33, 40, 60, 40, 50, 36]);
   const [timeData, setTimeData] = useState(0);
 
+  const [canvasData, setCanvasData] = useState({
+    labels: ['1'],
+    datasets: [
+      {
+        label: "Count",
+        borderColor: "navy",
+        // pointRadius: 0,
+        // fill: true,
+        backgroundColor: 'yellow',
+        // lineTension: 0.4,
+        data: [1],
+        borderWidth: 1,
+      },
+    ],
+  });
+
+  const [canvasDataIDT, setCanvasDataIDT] = useState({
+    labels: ['1'],
+    datasets: [
+      {
+        label: "Count",
+        borderColor: "navy",
+        // pointRadius: 0,
+        // fill: true,
+        backgroundColor: 'yellow',
+        // lineTension: 0.4,
+        data: [1],
+        borderWidth: 1,
+      },
+    ],
+  });
+
+
+  // const [d, sd] = useState([]);
+  const [g, sg] = useState([43, 40, 50, 40, 70, 40, 45, 33, 40, 60, 40, 50, 36]);
+  const [t, st] = useState(0);
+
   useEffect(() => {
     fetch('/data.csv')
       .then(response => response.text())
@@ -23,14 +60,28 @@ const CsvLoader = ( onDataLoaded ) => {
           header: true,
           complete: (results) => {
             setData(results.data);
-            const {delays, time_per_point} = profiling(results.data);
-            console.log(time_per_point);
-            setTimeData(time_per_point);
-            const frequencyCounts = delays.reduce((acc, value) => {
+            const algo = new RT_IVT_ALGO();
+            const output_ivt = algo.profiling(results.data);
+            console.log(output_ivt.time_per_point);
+            setTimeData(output_ivt.time_per_point);
+            const frequencyCounts = output_ivt.delays.reduce((acc, value) => {
               acc[value] = (acc[value] || 0) + 1;
               return acc;
             }, {});
             setGraphData(frequencyCounts);
+
+            // sd(results.d);
+            const al = new RT_IDT_ALGO();
+            const output_idt= al.profilingIDT(results.data);
+            console.log(output_idt.time_per_p);
+            st(output_idt.time_per_point);
+            const fq = output_idt.delays.reduce((acc, value) => {
+              acc[value] = (acc[value] || 0) + 1;
+              return acc;
+            }, {});
+            // console.log("MADE IT");
+            sg(fq);
+            
           },
         });
       });
@@ -44,24 +95,53 @@ const CsvLoader = ( onDataLoaded ) => {
     }
   }, [data, onDataLoaded]);
 
-  const labels = Object.keys(graphData);
-  const counts = Object.values(graphData);
+  useEffect(() => {
 
-  const canvasData = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Count",
-        borderColor: "navy",
-        // pointRadius: 0,
-        // fill: true,
-        backgroundColor: 'yellow',
-        // lineTension: 0.4,
-        data: counts,
-        borderWidth: 1,
-      },
-    ],
-  };
+    const labels = Object.keys(graphData);
+    const counts = Object.values(graphData);
+
+    const l = Object.keys(g);
+    const c = Object.values(g);
+
+    setCanvasData({
+      labels: labels,
+      datasets: [
+        {
+          label: "Count",
+          borderColor: "navy",
+          // pointRadius: 0,
+          // fill: true,
+          backgroundColor: 'yellow',
+          // lineTension: 0.4,
+          data: counts,
+          borderWidth: 1,
+        },
+      ],
+    })
+
+    setCanvasDataIDT({
+      labels: l,
+      datasets: [
+        {
+          label: "Count",
+          borderColor: "navy",
+          // pointRadius: 0,
+          // fill: true,
+          backgroundColor: 'yellow',
+          // lineTension: 0.4,
+          data: c,
+          borderWidth: 1,
+        },
+      ],
+    })
+
+  }, [graphData, g])
+
+  // const labels = Object.keys(graphData);
+  // const counts = Object.values(graphData);
+
+  // const l = Object.keys(g);
+  // const c = Object.values(g);
 
   const options = {
     scales: {
@@ -121,10 +201,20 @@ const CsvLoader = ( onDataLoaded ) => {
 
   return (
     <div style={graphStyle}>
+      <p>IVT</p>
       {/* <Line id="home" options={options} data={canvasData} /> */}
-      <Bar optisons={options} data={canvasData} />
+      <Bar data={canvasData} />
       <div>
         <p>{timeData}</p>
+      </div>
+
+      <div style={graphStyle}>
+        <p>IDT</p>
+      {/* <Bar optisons={options} data={canvasDataIDT} /> */}
+      <Bar data={canvasDataIDT} />
+      <div>
+        <p>{t}</p>
+      </div>
       </div>
     </div>
   //   <div>

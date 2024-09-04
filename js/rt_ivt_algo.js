@@ -48,62 +48,117 @@ export class RT_IVT_ALGO {
             }
         }
     }
+
+    profiling(data) {
+        const t = 0.1;
+            const algo = new RT_IVT_ALGO();
+            const SAMPLING_RATE = 50; // hz (1/1 sec)
+            const delays = [];
+            const rss = [];
+            const heap_t = [];
+            const heap_u = [];
+            const external = [];
+            // console.log("HIIII")
+    
+            const start = performance.now();
+    
+            data.forEach((pt, i) => {
+                const elapsed_time = i / SAMPLING_RATE; // seconds
+                const tic = performance.now();
+                // let mem_start = process.memoryUsage();
+                const fix = algo.rt_ivt2(pt, elapsed_time, t, 0.05);
+                // if (fix != null) {
+                //     console.log(fix);
+                // }
+            // console.log(fix);
+                const toc = performance.now();
+    
+                    // let mem = process.memoryUsage();
+    
+                    // let mem_end = process.memoryUsage();
+                    // rss.push(mem_end.rss - mem_start.rss);
+                    // heap_t.push(mem_end.heapTotal - mem_start.heapTotal);
+                    // heap_u.push(mem_end.heapUsed - mem_start.heapUsed);
+                    // external.push(mem_end.external - mem_end.external);
+    
+                const delay = toc - tic;
+                delays.push(delay);
+            });
+            
+    
+            // console.log(rss);
+            // console.log(heap_t);
+            // console.log(heap_u);
+            // console.log(external);
+    
+            const end = performance.now();
+            console.log(`Time taken: ${(end - start).toFixed(2)} milliseconds`);
+            const time_per_point = data.length/(end-start);
+            console.log("Time per point: ", time_per_point);
+    
+            // const memoryUsage = process.memoryUsage();
+            // console.log(`RSS: ${memoryUsage.rss} bytes`);
+            // console.log(`Heap Total: ${memoryUsage.heapTotal} bytes`);
+            // console.log(`Heap Used: ${memoryUsage.heapUsed} bytes`);
+            // console.log(`External: ${memoryUsage.external} bytes`);
+            return {delays: delays, time_per_point: time_per_point};
+    }
 }
 
-export function profiling(data) {
-    const t = 0.1;
-        const algo = new RT_IVT_ALGO();
-        const SAMPLING_RATE = 50; // hz (1/1 sec)
-        const delays = [];
-        const rss = [];
-        const heap_t = [];
-        const heap_u = [];
-        const external = [];
-        // console.log("HIIII")
+// export function profiling(data) {
+//     const t = 0.1;
+//         const algo = new RT_IVT_ALGO();
+//         const SAMPLING_RATE = 50; // hz (1/1 sec)
+//         const delays = [];
+//         const rss = [];
+//         const heap_t = [];
+//         const heap_u = [];
+//         const external = [];
+//         // console.log("HIIII")
 
-        const start = performance.now();
+//         const start = performance.now();
 
-        data.forEach((pt, i) => {
-            const elapsed_time = i / SAMPLING_RATE; // seconds
-            const tic = performance.now();
-            // let mem_start = process.memoryUsage();
-            const fix = algo.rt_ivt2(pt, elapsed_time, t, 0.05);
-            // if (fix != null) {
-            //     console.log(fix);
-            // }
-        // console.log(fix);
-            const toc = performance.now();
+//         data.forEach((pt, i) => {
+//             const elapsed_time = i / SAMPLING_RATE; // seconds
+//             const tic = performance.now();
+//             // let mem_start = process.memoryUsage();
+//             const fix = algo.rt_ivt2(pt, elapsed_time, t, 0.05);
+//             // if (fix != null) {
+//             //     console.log(fix);
+//             // }
+//         // console.log(fix);
+//             const toc = performance.now();
 
-                // let mem = process.memoryUsage();
+//                 // let mem = process.memoryUsage();
 
-                // let mem_end = process.memoryUsage();
-                // rss.push(mem_end.rss - mem_start.rss);
-                // heap_t.push(mem_end.heapTotal - mem_start.heapTotal);
-                // heap_u.push(mem_end.heapUsed - mem_start.heapUsed);
-                // external.push(mem_end.external - mem_end.external);
+//                 // let mem_end = process.memoryUsage();
+//                 // rss.push(mem_end.rss - mem_start.rss);
+//                 // heap_t.push(mem_end.heapTotal - mem_start.heapTotal);
+//                 // heap_u.push(mem_end.heapUsed - mem_start.heapUsed);
+//                 // external.push(mem_end.external - mem_end.external);
 
-            const delay = toc - tic;
-            delays.push(delay);
-        });
+//             const delay = toc - tic;
+//             delays.push(delay);
+//         });
         
 
-        // console.log(rss);
-        // console.log(heap_t);
-        // console.log(heap_u);
-        // console.log(external);
+//         // console.log(rss);
+//         // console.log(heap_t);
+//         // console.log(heap_u);
+//         // console.log(external);
 
-        const end = performance.now();
-        console.log(`Time taken: ${(end - start).toFixed(2)} milliseconds`);
-        const time_per_point = data.length/(end-start);
-        console.log("Time per point: ", time_per_point);
+//         const end = performance.now();
+//         console.log(`Time taken: ${(end - start).toFixed(2)} milliseconds`);
+//         const time_per_point = data.length/(end-start);
+//         console.log("Time per point: ", time_per_point);
 
-        // const memoryUsage = process.memoryUsage();
-        // console.log(`RSS: ${memoryUsage.rss} bytes`);
-        // console.log(`Heap Total: ${memoryUsage.heapTotal} bytes`);
-        // console.log(`Heap Used: ${memoryUsage.heapUsed} bytes`);
-        // console.log(`External: ${memoryUsage.external} bytes`);
-        return {delays: delays, time_per_point: time_per_point};
-}
+//         // const memoryUsage = process.memoryUsage();
+//         // console.log(`RSS: ${memoryUsage.rss} bytes`);
+//         // console.log(`Heap Total: ${memoryUsage.heapTotal} bytes`);
+//         // console.log(`Heap Used: ${memoryUsage.heapUsed} bytes`);
+//         // console.log(`External: ${memoryUsage.external} bytes`);
+//         return {delays: delays, time_per_point: time_per_point};
+// }
 
 export function ivt2(data, v_threshold, verbose = 0) {
     var Xs = data.map(row => row.x);
