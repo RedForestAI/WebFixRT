@@ -103,6 +103,144 @@ export class RT_IVT_ALGO {
             // console.log(`External: ${memoryUsage.external} bytes`);
             return {delays: delays, time_per_point: time_per_point};
     }
+
+    statistics(data, y_input) {
+        const step = 2/19;
+        const thresholds = [];
+        for (let i = 0; i <= 2 + step; i += step) {
+            thresholds.push(i);
+        }
+        // const thresholds = math.range(0, 2 + step, step).toArray();
+        // const thresholds = [0.1];
+        console.log('Thresholds:', thresholds[1]);
+    
+    
+        let fixation_recall = [];
+        let fixation_precision = [];
+        let fixation_f1_score = [];
+        let saccade_recall = [];
+        let saccade_precision = [];
+        let saccade_f1_score = [];
+    
+        for (let t of thresholds) {
+            let y1 = ivt2(data, t)[0];
+            let y_pred = y1;
+    
+            let cm = ConfusionMatrix.fromLabels(y_input, y_pred);
+            let mat = cm.getMatrix();
+    
+            // Fixation calculations
+            let sumf = mat[0][0] + mat[0][1];
+            let Tc = mat[0][0];
+            fixation_recall.push((Tc * 100) / sumf);
+            console.log('Fixation recall at threshold', t, 'is', fixation_recall[fixation_recall.length - 1]);
+    
+            let sumfp = mat[0][0] + mat[1][0];
+            let Tcfp = mat[0][0];
+            fixation_precision.push((Tcfp * 100) / sumfp);
+    
+            let multiple_recal_prec = 2 * ((Tcfp * 100 / sumfp) * (Tc * 100 / sumf));
+            let add_recall_prec = ((Tc * 100 / sumf) + (Tcfp * 100 / sumfp));
+            let result_f1_score = multiple_recal_prec / add_recall_prec;
+            fixation_f1_score.push(result_f1_score);
+    
+            // Saccade calculations
+            let sums = mat[1][0] + mat[1][1];
+            let Tcs = mat[1][1];
+            saccade_recall.push((Tcs * 100) / sums);
+            console.log('Saccade recall at threshold', t, 'is', saccade_recall[saccade_recall.length - 1]);
+    
+            let sum_saccP = mat[0][1] + mat[1][1];
+            let Tc_saccP = mat[1][1];
+            saccade_precision.push((Tc_saccP * 100) / sum_saccP);
+            console.log('Saccade precision at threshold', t, 'is', saccade_precision[saccade_precision.length - 1]);
+    
+            let multiply = 2 * ((Tc_saccP * 100 / sum_saccP) * (Tcs * 100 / sums));
+            let addition = (Tcs * 100 / sums) + (Tc_saccP * 100 / sum_saccP);
+            saccade_f1_score.push(multiply / addition);
+            console.log('Saccade F1 Score for threshold', t, 'is', saccade_f1_score[saccade_f1_score.length - 1]);
+            console.log('Threshold =', t);
+        }
+        new_thresholds = thresholds.map(x => Number(x.toFixed(2)));
+        // Plot
+        const plotData = {
+            labels: new_thresholds.map(String),
+            datasets: [
+                {
+                    label: 'Fixation Recall',
+                    data: fixation_recall,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    fill: false,
+                },
+                {
+                    label: 'Fixation Precision',
+                    data: fixation_precision,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    fill: false,
+                },
+                {
+                    label: 'Fixation F1 Score',
+                    data: fixation_f1_score,
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    fill: false,
+                },
+                {
+                    label: 'Saccade Recall',
+                    data: saccade_recall,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false,
+                },
+                {
+                    label: 'Saccade Precision',
+                    data: saccade_precision,
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    fill: false,
+                },
+                {
+                    label: 'Saccade F1 Score',
+                    data: saccade_f1_score,
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    fill: false,
+                },
+            ]
+        };
+    
+        const config = {
+            type: 'line',
+            data: plotData,
+            options: {
+                responsive: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Velocity Threshold vs Accuracy'
+                    }
+                },
+                scales: {
+                    xAxes: {
+                        title: {
+                            display: true,
+                            text: 'V_threshold [px/ms]'
+                        }
+                    },
+                    yAxes: {
+                        title: {
+                            display: true,
+                            text: 'Accuracy [%]'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                    }
+                }
+            }
+        };
+    
+        // new Chart(ctx, config);
+    
+        // const buffer = canvas.toBuffer('image/png');
+        // fs.writeFileSync('chart.png', buffer);
+        // console.log('Chart saved as chart.png');
+    }
 }
 
 // export function profiling(data) {

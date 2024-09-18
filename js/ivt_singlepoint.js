@@ -40,57 +40,57 @@ function readCSV(filename) {
 // Manually calculate the confusion matrix
 // Iterate through thresholds and make the plot
 
-export class RT_IVT_ALGO {
-    constructor() {
-        this.prior_x = null;
-        this.prior_y = null;
-        this.prior_t = null;
-        this.isFix = null;
-        this.elapsed_times = [];
-    }
+// export class RT_IVT_ALGO {
+//     constructor() {
+//         this.prior_x = null;
+//         this.prior_y = null;
+//         this.prior_t = null;
+//         this.isFix = null;
+//         this.elapsed_times = [];
+//     }
 
-    rt_ivt2(pt, elapsed_time, threshold, min_dur) {
-        if (this.prior_x == null && this.prior_y == null) {
-            this.prior_x = parseFloat(pt.x);
-            this.prior_y = parseFloat(pt.y);
-            this.prior_t = elapsed_time;
-            return null;
-        }
+//     rt_ivt2(pt, elapsed_time, threshold, min_dur) {
+//         if (this.prior_x == null && this.prior_y == null) {
+//             this.prior_x = parseFloat(pt.x);
+//             this.prior_y = parseFloat(pt.y);
+//             this.prior_t = elapsed_time;
+//             return null;
+//         }
 
-        let dX = parseFloat(pt.x) - this.prior_x;
-        let dY = parseFloat(pt.y) - this.prior_y;
+//         let dX = parseFloat(pt.x) - this.prior_x;
+//         let dY = parseFloat(pt.y) - this.prior_y;
 
-        let v = Math.abs((dX + dY) / 2);
-        this.prior_x = parseFloat(pt.x);
-        this.prior_y = parseFloat(pt.y);
+//         let v = Math.abs((dX + dY) / 2);
+//         this.prior_x = parseFloat(pt.x);
+//         this.prior_y = parseFloat(pt.y);
 
-        if (v < threshold) {
-            if (this.isFix == 1) {
-                this.elapsed_times.push(elapsed_time);
-                return null;
-            } else {
-                this.isFix = 1;
-                this.elapsed_times.push(elapsed_time);
-                return null;
-            }
-        } else {
-            if (this.isFix == 1) {
-                let x = this.prior_x;
-                let y = this.prior_y;
-                let dur = elapsed_time - this.elapsed_times[0];
-                this.elapsed_times = []; 
-                this.isFix = 0;
-                if (dur < min_dur) {
-                    return null;
-                }
-                let fixation = { x: x, y: y, duration: dur, end_time: elapsed_time };
-                return fixation;
-            } else {
-                return null;
-            }
-        }
-    }
-}
+//         if (v < threshold) {
+//             if (this.isFix == 1) {
+//                 this.elapsed_times.push(elapsed_time);
+//                 return null;
+//             } else {
+//                 this.isFix = 1;
+//                 this.elapsed_times.push(elapsed_time);
+//                 return null;
+//             }
+//         } else {
+//             if (this.isFix == 1) {
+//                 let x = this.prior_x;
+//                 let y = this.prior_y;
+//                 let dur = elapsed_time - this.elapsed_times[0];
+//                 this.elapsed_times = []; 
+//                 this.isFix = 0;
+//                 if (dur < min_dur) {
+//                     return null;
+//                 }
+//                 let fixation = { x: x, y: y, duration: dur, end_time: elapsed_time };
+//                 return fixation;
+//             } else {
+//                 return null;
+//             }
+//         }
+//     }
+// }
 
 function ivt2(data, v_threshold, verbose = 0) {
     var Xs = data.map(row => row.x);
@@ -153,6 +153,7 @@ function statistics(data, y_input) {
 
         let cm = ConfusionMatrix.fromLabels(y_input, y_pred);
         let mat = cm.getMatrix();
+        console.log(mat);
 
         // Fixation calculations
         let sumf = mat[0][0] + mat[0][1];
@@ -260,59 +261,59 @@ function statistics(data, y_input) {
         }
     };
 
-    // new Chart(ctx, config);
+    new Chart(ctx, config);
 
-    // const buffer = canvas.toBuffer('image/png');
-    // fs.writeFileSync('chart.png', buffer);
-    // console.log('Chart saved as chart.png');
+    const buffer = canvas.toBuffer('image/png');
+    fs.writeFileSync('chart.png', buffer);
+    console.log('Chart saved as chart.png');
 }
 
-export function profiling(data) {
-    const t = 0.1;
-        const algo = new RT_IVT_ALGO();
-        const SAMPLING_RATE = 50; // hz (1/1 sec)
-        const delays = [];
-        const rss = [];
-        const heap_t = [];
-        const heap_u = [];
-        const external = [];
+// export function profiling(data) {
+//     const t = 0.1;
+//         const algo = new RT_IVT_ALGO();
+//         const SAMPLING_RATE = 50; // hz (1/1 sec)
+//         const delays = [];
+//         const rss = [];
+//         const heap_t = [];
+//         const heap_u = [];
+//         const external = [];
 
-        const start = performance.now();
+//         const start = performance.now();
 
-        data.forEach((pt, i) => {
-            const elapsed_time = i / SAMPLING_RATE; // seconds
-            const tic = performance.now();
-            let mem_start = process.memoryUsage();
-            const fix = algo.rt_ivt2(pt, elapsed_time, threshold = t, min_dur = 0.05);
-            // console.log(fix)
-            const toc = performance.now();
+//         data.forEach((pt, i) => {
+//             const elapsed_time = i / SAMPLING_RATE; // seconds
+//             const tic = performance.now();
+//             let mem_start = process.memoryUsage();
+//             const fix = algo.rt_ivt2(pt, elapsed_time, threshold = t, min_dur = 0.05);
+//             // console.log(fix)
+//             const toc = performance.now();
 
-            let mem = process.memoryUsage();
+//             let mem = process.memoryUsage();
 
-            let mem_end = process.memoryUsage();
-            rss.push(mem_end.rss - mem_start.rss);
-            heap_t.push(mem_end.heapTotal - mem_start.heapTotal);
-            heap_u.push(mem_end.heapUsed - mem_start.heapUsed);
-            external.push(mem_end.external - mem_end.external);
+//             let mem_end = process.memoryUsage();
+//             rss.push(mem_end.rss - mem_start.rss);
+//             heap_t.push(mem_end.heapTotal - mem_start.heapTotal);
+//             heap_u.push(mem_end.heapUsed - mem_start.heapUsed);
+//             external.push(mem_end.external - mem_end.external);
 
-            const delay = toc - tic;
-            delays.push(delay);
-        });
+//             const delay = toc - tic;
+//             delays.push(delay);
+//         });
 
-        // console.log(rss);
-        // console.log(heap_t);
-        // console.log(heap_u);
-        // console.log(external);
+//         // console.log(rss);
+//         // console.log(heap_t);
+//         // console.log(heap_u);
+//         // console.log(external);
 
-        const end = performance.now();
-        console.log(`Time taken: ${(end - start).toFixed(2)} milliseconds`);
+//         const end = performance.now();
+//         console.log(`Time taken: ${(end - start).toFixed(2)} milliseconds`);
 
-        const memoryUsage = process.memoryUsage();
-        console.log(`RSS: ${memoryUsage.rss} bytes`);
-        console.log(`Heap Total: ${memoryUsage.heapTotal} bytes`);
-        console.log(`Heap Used: ${memoryUsage.heapUsed} bytes`);
-        console.log(`External: ${memoryUsage.external} bytes`);
-}
+//         const memoryUsage = process.memoryUsage();
+//         console.log(`RSS: ${memoryUsage.rss} bytes`);
+//         console.log(`Heap Total: ${memoryUsage.heapTotal} bytes`);
+//         console.log(`Heap Used: ${memoryUsage.heapUsed} bytes`);
+//         console.log(`External: ${memoryUsage.external} bytes`);
+// }
 
 readCSV("test.csv")
     .then((results) => {
@@ -322,7 +323,7 @@ readCSV("test.csv")
         y_input = lab.slice(0, -1);
         y_input = y_input.map(x => Number(x));
         // profiling(results);
-        // statistics(results, y_input);
+        statistics(results, y_input);
 
         // const t = 0.1;
         // const algo = new RT_IVT_ALGO();
