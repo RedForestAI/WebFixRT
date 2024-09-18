@@ -23,7 +23,7 @@ npm run dev
 
 # Usage
 Below is an example of how you could run our algorithm(s):
-```
+```ts
 import { RT_IVT_ALGO, RT_IDT_ALGO } from 'webfixrt';
 const algo = new RT_IVT_ALGO();
 fixation = algo.rt_ivt2({x: 0, y: 0}, 0, 0.2, 0.5) # xy-coordinate, elapsed time, threshold, minimum duration
