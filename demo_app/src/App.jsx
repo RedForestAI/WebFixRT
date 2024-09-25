@@ -6,6 +6,7 @@ import React from 'react';
 // import ReactDOM from 'react-dom';
 import CsvLoader from './CsvLoader';
 import LineGraph from './chart';
+import ScanPathPlot from './ScanPathPlot';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,6 +24,7 @@ function App() {
   return (
     <>
     {/* <LineGraph /> */}
+    <ScanPathPlot />
     <CsvLoader />
       <div>
         {/* <CsvLoader /> */}

@@ -83,6 +83,8 @@ class RT_IDT_ALGO {
 function rt_idt(data, threshold, verbose = 0) {
     var Xs = data.map(row => row.x);
     let Ys = data.map(row => row.y);
+    // console.log('Xs', Xs)
+    // console.log('Ys', Ys)
     Xs = Xs.map(x => Number(x));
     Ys = Ys.map(y => Number(y));
     let disper = [];
@@ -93,6 +95,7 @@ function rt_idt(data, threshold, verbose = 0) {
         if (i >= sequence_dim) {
             let x = Xs.slice(i-sequence_dim, i+sequence_dim);
             let y = Ys.slice(i-sequence_dim, i+sequence_dim);
+            // console.log(Math.max(...x) - Math.min(...x) + (Math.max(...y) - Math.min(...y)))
             disper.push(Math.max(...x) - Math.min(...x) + (Math.max(...y) - Math.min(...y)));
         } else {
             disper.push(0);
@@ -153,10 +156,11 @@ function profilingIDT(data) {
 }
 
 function statisticsIDT(data, y_input) {
-    const step = 2/19;
-    const thresholds = math.range(0, 2 + step, step).toArray();
+    const step = 1;
+    // const thresholds=[0, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7, 7.5, 8, 9, 10, 12,13, 14, 15, 16, 20, 22, 25, 30, 35, 50];
+    const thresholds = math.range(0, 50, step).toArray();
     // const thresholds = [0.1];
-    console.log('Thresholds:', thresholds[1]);
+    // console.log('Thresholds:', thresholds[1]);
 
 
     let fixation_recall = [];
@@ -172,7 +176,7 @@ function statisticsIDT(data, y_input) {
 
         let cm = ConfusionMatrix.fromLabels(y_input, y_pred);
         let mat = cm.getMatrix();
-        console.log(mat);
+        // console.log(mat);
 
         // Fixation calculations
         let sumf = mat[0][0] + mat[0][1];
@@ -283,14 +287,14 @@ function statisticsIDT(data, y_input) {
     new Chart(ctx, config);
 
     const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync('chart.png', buffer);
-    console.log('Chart saved as chart.png');
+    fs.writeFileSync('IDT.png', buffer);
+    console.log('Chart saved as IDT.png');
 }
 
 readCSV("test.csv")
     .then((results) => {
         console.log(results.length);
-        y1 = rt_idt(results, v_threshold = 0.6, verbose = 1);
+        y1 = rt_idt(results.slice(0, 10), v_threshold = 0.1, verbose = 1);
         let lab = results.map(row => row.label);
         y_input = lab.slice(0, -1);
         y_input = y_input.map(x => Number(x));
