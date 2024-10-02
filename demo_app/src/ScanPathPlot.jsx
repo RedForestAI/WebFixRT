@@ -64,7 +64,7 @@ const ScanPathPlot = () => {
           },
         });
       });
-  }, []);
+  }, [name]);
 
   const canvasRef = useRef(null);
   
@@ -131,7 +131,21 @@ const ScanPathPlot = () => {
     }
   }, [dataPoints]);
   
-  return <canvas ref={canvasRef} width={500} height={500} style={{border: "1px solid black"}} />
+  
+  // return <canvas ref={canvasRef} width={500} height={500} style={{border: "1px solid black"}} />
+  return <>
+    <select
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  >
+  {names.map((option) => (
+  <option key={option} value={option}>
+  {option}
+  </option>
+  ))}
+  </select>
+  <canvas ref={canvasRef} width={700} height={700} style={{border: "1px solid black"}} />
+  </>
 };
 
 
