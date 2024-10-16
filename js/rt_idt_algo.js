@@ -9,17 +9,20 @@ export class RT_IDT_ALGO {
     }
     
     rt_idt2(pt, elapsed_time, disp_thresh, min_dur) {
-        this.seq_x.push(pt[0])
-        this.seq_y.push(pt[1])
+        this.seq_x.push(parseFloat(pt.x))
+        this.seq_y.push(parseFloat(pt.y))
         let cur_d = 0
 
         if (this.seq_x.length == (this.sq_dim + 1)) {
-            cur_d = Math.max(this.seq_x) - Math.min(this.seq_x) + (Math.max(this.seq_y) - Math.min(self.seq_y));
-            this.seq_x.pop(0);
-            this.seq_y.pop(0);
+            cur_d = Math.max(...this.seq_x) - Math.min(...this.seq_x) + (Math.max(...this.seq_y) - Math.min(...this.seq_y));
+            
+            this.seq_x.shift();
+            this.seq_y.shift();
         }
 
         let D = Math.abs(cur_d);
+        // console.log('curd', cur_d);
+        console.log('D', D);
         if (D < disp_thresh) {
             if (this.fix == 1) {
                 this.elapsed_times.push(elapsed_time);

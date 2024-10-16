@@ -61,9 +61,9 @@ const CsvLoader = ( onDataLoaded ) => {
           complete: (results) => {
             setData(results.data);
             const algo = new RT_IVT_ALGO();
-            console.log(algo.statistics(results.data, ))
+            // console.log(algo.statistics(results.data, ))
             const output_ivt = algo.profiling(results.data);
-            console.log(output_ivt.time_per_point);
+            // console.log(output_ivt.time_per_point);
             setTimeData(output_ivt.time_per_point);
             const frequencyCounts = output_ivt.delays.reduce((acc, value) => {
               acc[value] = (acc[value] || 0) + 1;
