@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.csv
+js/*.csv
+script/*.csv
 node_modules/
 script/data_practice_run/
 
