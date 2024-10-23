@@ -53,7 +53,7 @@ const CsvLoader = ( onDataLoaded ) => {
   const [t, st] = useState(0);
 
   useEffect(() => {
-    fetch('/data.csv')
+    fetch('WebFixRT/data.csv')
       .then(response => response.text())
       .then(text => {
         Papa.parse(text, {

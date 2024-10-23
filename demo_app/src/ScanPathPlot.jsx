@@ -49,7 +49,7 @@ const ScanPathPlot = () => {
   const [fixationPointsIDT, setFixationPointsIDT] = useState([]);
 
   useEffect(() => {
-    fetch('/test_name.csv')
+    fetch('WebFixRT/test_name.csv')
       .then(response => response.text())
       .then(text => {
         Papa.parse(text, {
