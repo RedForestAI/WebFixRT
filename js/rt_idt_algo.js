@@ -22,7 +22,7 @@ export class RT_IDT_ALGO {
 
         let D = Math.abs(cur_d);
         // console.log('curd', cur_d);
-        console.log('D', D);
+        // console.log('D', D);
         if (D < disp_thresh) {
             if (this.fix == 1) {
                 this.elapsed_times.push(elapsed_time);
@@ -40,7 +40,8 @@ export class RT_IDT_ALGO {
                 if (dur < min_dur) {
                     return null;
                 }
-                let fixation = { x: pt[0], y: pt[1], duration: dur, end_time: elapsed_time };
+                let fixation = { x: parseFloat(pt.x), y: parseFloat(pt.y), duration: dur, end_time: elapsed_time };
+                console.log('Dis', fixation);
                 return fixation;
             } else {
                 return null;

@@ -262,14 +262,14 @@ function statisticsIDT(data, y_input) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Velocity Threshold vs Accuracy'
+                    text: 'Dispersion Threshold vs Accuracy'
                 }
             },
             scales: {
                 xAxes: {
                     title: {
                         display: true,
-                        text: 'V_threshold [px/ms]'
+                        text: 'D_threshold [px/ms]'
                     }
                 },
                 yAxes: {
@@ -287,8 +287,8 @@ function statisticsIDT(data, y_input) {
     new Chart(ctx, config);
 
     const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync('IDT.png', buffer);
-    console.log('Chart saved as IDT.png');
+    fs.writeFileSync('IDT1.png', buffer);
+    console.log('Chart saved as IDT1.png');
 }
 
 readCSV("test.csv")

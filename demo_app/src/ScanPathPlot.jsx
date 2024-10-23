@@ -74,9 +74,9 @@ const ScanPathPlot = () => {
 
             i = 0;
             const fixationDataIDT = parsedData.map((point) => {
-              const fixation1 = algo1.rt_idt2(point, i/50, 8, 0.05);  
+              const fixation1 = algo1.rt_idt2(point, i/50, 1.5, 0.05);  
               ++i;
-              console.log('point', point);
+              // console.log('point', point);
               return fixation1 ? { x: point.x, y: point.y } : null;   // Only return if it's a fixation
             }).filter(point => point !== null);
             

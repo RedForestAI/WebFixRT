@@ -42,6 +42,7 @@ export class RT_IVT_ALGO {
                     return null;
                 }
                 let fixation = { x: x, y: y, duration: dur, end_time: elapsed_time };
+                console.log('Vel', fixation);
                 return fixation;
             } else {
                 return null;
